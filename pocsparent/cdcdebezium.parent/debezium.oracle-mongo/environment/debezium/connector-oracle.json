@@ -1,0 +1,17 @@
+{
+  "name": "customers-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.oracle.OracleConnector",
+    "tasks.max": "1",
+    "database.hostname": "dbz_oracle21",
+    "database.port": "1521",
+    "database.user": "c##dbzuser",
+    "database.password": "dbz",
+    "database.dbname": "ORCLCDB",
+    "database.pdb.name": "ORCLPDB1",
+    "database.server.name": "server1",
+    "table.include.list": "C##DBZUSER.CUSTOMERS",
+    "database.history.kafka.bootstrap.servers": "kafka:9092",
+    "database.history.kafka.topic": "schema-changes"
+  }
+}

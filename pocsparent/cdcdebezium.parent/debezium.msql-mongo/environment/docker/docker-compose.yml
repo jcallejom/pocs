@@ -1,0 +1,117 @@
+version: '2.1'
+services:
+  zookeeper:
+    image: debezium/zookeeper:1.5
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+  kafka:
+    image: debezium/kafka:1.5
+    container_name: kafka
+    ports:
+      - 9092:9092
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper:2181
+    links:
+      - zookeeper
+  mysql:
+    image: debezium/example-mysql:1.5
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=debezium
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=mysqlpw
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin1
+  connect:
+    image: debezium/connect:1.5
+    container_name: connect
+    ports:
+      - 8083:8083
+    volumes:
+        #allow *.sql, *.sql.gz, or *.sh and is execute only if data directory is empty
+        - ./kafka/ojdbc8.jar:/kafka/libs/ojdbc8.jar
+        # - ./../kafka/ojdbc8.jar:/kafka/libs/ojdbc8.jar
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - GROUP_ID=1
+      - CONFIG_STORAGE_TOPIC=my_connect_configs
+      - OFFSET_STORAGE_TOPIC=my_connect_offsets
+      - STATUS_STORAGE_TOPIC=my_connect_statuses
+    links:
+      - zookeeper
+      - kafka
+      - mysql
+     # - dbz_oracle21
+  replicator:
+    image: com.poc.cdc/replicator-mongodb:0.0.1-SNAPSHOT
+    container_name: replicator
+    environment:
+      - SPRING_DATA_MONGODB_USERNAME=admin
+      - SPRING_DATA_MONGODB_PASSWORD=admin1
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=inventory
+      - SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE=admin
+      - KAFKA_HOST=kafka:9092
+      - KAFKA_GROUP=replicator-dev
+      - KAFKA_TOPIC_PRODUCT=dbserver1.inventory.products
+      - KAFKA_TOPIC_CUSTOMER=server1.C__DBZUSER.CUSTOMERS
+    links:
+      - kafka
+      - mongo
+#  dbz_oracle21:
+#    #image: container-registry.oracle.com/database/enterprise:latest
+#    image: oracle21configured:latest
+#    container_name: oracle21c
+#    ports:
+#      - 1521:1521
+#    environment:
+#    #Sid database
+#    - ORACLE_SID=ORCLCDB
+#    #optional this is default user 
+#    - ORACLE_PDB=ORCLPDB1
+#    # optional change user SYSTEM password 
+#    - ORACLE_PWD=oraclepw 
+ ##########################################################################     
+ #web UI for monitoring Apache Kafka clusters
+ ##########################################################################       
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    ports:
+      - 9000:9000
+    environment:
+      - KAFKA_BROKERCONNECT=kafka:9092
+    links:
+      - zookeeper
+      - kafka
+#database admin service
+  adminer:
+    #container_name: adminer
+    image: adminer
+    restart: always
+    depends_on: 
+      - mysql
+    ports:
+       - 9090:8080
+ ##########################################################################     
+ #dbeaver service
+ ##########################################################################       
+  dbeaver:
+    image: dbeaver/cloudbeaver
+    restart: always
+    ports:
+      - 8978:8978
+    depends_on:
+      - mysql
