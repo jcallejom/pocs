@@ -23,11 +23,12 @@ public class CustomerServiceImpl implements CustomerService {
 
 @Override
   public void create(CustomerVo customer){
+	
     customerRepository.save(mapper.buildCustomer(customer));
     //Todo  improtarscrip create view desfichero
     //mediante jdbc template insert des fichero
     //o buscar solucion mas nueva
-    
+    log.info("CustomerService  create customer");
   }
   
   @Override

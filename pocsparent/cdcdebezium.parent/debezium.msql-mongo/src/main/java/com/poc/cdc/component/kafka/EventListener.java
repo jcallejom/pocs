@@ -13,24 +13,37 @@ import java.util.Objects;
 @Component
 public class EventListener {
   
-  private final IntegrationService integrationService;
-  
-  public EventListener (IntegrationService integrationService){
-    this.integrationService = integrationService;
-  }
+		  private final IntegrationService integrationService;
+		  
+		  public EventListener (IntegrationService integrationService){
+		    this.integrationService = integrationService;
+		  }
 
-  @KafkaListener(
-    topics = {"${kafka.topic.product}"},
-    groupId = "${kafka.group}",
-    containerFactory = "kafkaListenerContainerFactory"
-  )
-  public void listenEvents(Event event){
-    if (Objects.nonNull(event.getPayload().getSource())){
-      log.info("New event consumed successfully");
-      integrationService.processKafkaEvent(event);
-    }else{
-      log.error("The event has been discarded for not having the expected information");
-    }
-  }
+		  @KafkaListener(
+		    topics = {"${kafka.topic.product}"},
+		    groupId = "${kafka.group}",
+		    containerFactory = "kafkaListenerContainerFactory"
+		  )
+		  public void listenproductEvents(Event event){
+		    if (Objects.nonNull(event.getPayload().getSource())){
+		      log.info("New product event consumed successfully");
+		      integrationService.processKafkaEvent(event);
+		    }else{
+		      log.error("The event has been discarded for not having the expected information");
+		    }
+		  }
+  		  @KafkaListener(
+		    topics = {"${kafka.topic.customer}"},
+		    groupId = "${kafka.group}",
+		    containerFactory = "kafkaListenerContainerFactory"
+		  )
+		  public void listencustomerEvents(Event event){
+		    if (Objects.nonNull(event.getPayload().getSource())){
+		      log.info("New customer event consumed successfully");
+		      integrationService.processKafkaEvent(event);
+		    }else{
+		      log.error("The event has been discarded for not having the expected information");
+		    }
+		  }
 
 }

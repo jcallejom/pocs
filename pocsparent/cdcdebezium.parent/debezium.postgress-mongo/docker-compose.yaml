@@ -44,7 +44,8 @@ services:
     ports:
       - 8090:8080
   order-service:
-    build: ./order-service
+    build: .
+    image: com.poc.cdc/postgres:0.0.1-SNAPSHOT
     environment:
       SPRING_PROFILES_ACTIVE: "docker" 
       SPRING_DATASOURCE_URL: jdbc:postgresql://order-db:5432/orderdb?currentSchema=inventory

@@ -22,12 +22,15 @@ public class IntegrationServiceImpl implements IntegrationService {
   @Override
   public void processKafkaEvent(Event event){
       SourceDatabaseEntity entity = SourceDatabaseEntity.fromId(event.getPayload().getSource().getTable());
+      log.info("table:" + event.getPayload().getSource().getTable());
       switch (entity){
         case PRODUCT:
           managementService.manageProduct(event.getPayload());
+          log.info("New product event consumed Payload");
           break;
         case CUSTOMER:
             managementService.manageCustomer(event.getPayload());
+            log.info("New customer event consumed Payload");
             break;  
         default:
           log.error(UNDEFINED_ENTITY_ERROR_MESSAGE);

@@ -26,7 +26,9 @@ public class ManagementServiceImpl implements ManagementService {
   
   @Override
   public void manageProduct(EventPayload payload){
+	  
     SourceDatabaseOperation operation = SourceDatabaseOperation.fromId(payload.getOp());
+    log.info("Operacion: "+payload.getOp());
     switch (operation){
       case CREATE:
       case UPDATE:
@@ -37,6 +39,7 @@ public class ManagementServiceImpl implements ManagementService {
           .description(payload.getAfter().get("description").toString())
           .weight(Double.parseDouble(payload.getAfter().get("weight").toString()))
           .build();
+        log.info("manageProduct  UPDATE consumed Payload");
         productService.create(product);
         break;
       case DELETE:
@@ -50,7 +53,9 @@ public class ManagementServiceImpl implements ManagementService {
 
 @Override
 public void manageCustomer(EventPayload payload) {
+	log.info("Operacion: "+payload.getOp());
 	SourceDatabaseOperation operation = SourceDatabaseOperation.fromId(payload.getOp());
+	
     switch (operation){
       case CREATE:
       case UPDATE:
@@ -61,6 +66,7 @@ public void manageCustomer(EventPayload payload) {
           .lastName(payload.getAfter().get("lastName").toString())
           .email(payload.getAfter().get("email").toString())
           .build();
+    	  log.info("manageCustomer consumed Payload");
     	  customerService.create(customerVo);
         break;
       case DELETE:
