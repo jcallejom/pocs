@@ -29,10 +29,17 @@ public class OrderService {
 	public PurchaseOrder addOrder(PurchaseOrder order) {
 		PurchaseOrder newOrder = repository.save(order);
 		
+		
+		diparar(order);
+		return newOrder;
+	}
+	//Esta operacion se podira poner en raite ,
+	//estep,
+	//despues de presistir en base de datos,
+	//en metod postsSTep despues del step 
+	private void diparar(PurchaseOrder order) {
 		publisher.fire(OrderCreatedEvent.of(this,order));
 		publisher.fire(InvoiceCreatedEvent.of(this,order));
-		
-		return newOrder;
 	}
 
 	public PurchaseOrder updateOrderLine(long orderId, long orderLineId, OrderLineStatus newStatus) {

@@ -42,24 +42,9 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8090:8090
- ##########################################################################     
- #pgadmin service
- ##########################################################################  
-  pgadmin4:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
-      PGADMIN_DEFAULT_PASSWORD: "Jcallejo2023"
-    ports:
-      - 81:80
-    depends_on:
-      - order-db      
-      
+      - 8090:8080
   order-service:
-    build: .
-    image: com.poc.cdc/postgres:0.0.1-SNAPSHOT
+    build: ./order-service
     environment:
       SPRING_PROFILES_ACTIVE: "docker" 
       SPRING_DATASOURCE_URL: jdbc:postgresql://order-db:5432/orderdb?currentSchema=inventory
@@ -70,7 +55,7 @@ services:
   order-db:
     image: quay.io/debezium/example-postgres:2.1.1.Final
     ports:
-     - 5432:5432
+     - 5433:5432
     healthcheck:
       test: "pg_isready -U postgresuser -d orderdb"
       interval: 2s

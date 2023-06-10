@@ -7,7 +7,7 @@ spring:
            dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/orderdb?currentSchema=inventory
+    url: jdbc:postgresql://localhost:5433/orderdb?currentSchema=inventory
     username: postgresuser
     password: postgrespw
   sql:

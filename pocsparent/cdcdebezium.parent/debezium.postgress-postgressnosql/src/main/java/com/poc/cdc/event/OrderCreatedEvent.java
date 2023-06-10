@@ -35,7 +35,7 @@ public class OrderCreatedEvent extends ApplicationEvent {
         this.order = order;
     }
 
-    public static OrderCreatedEvent of(Object source, PurchaseOrder order ) {
+    public static OrderCreatedEvent of(Object source, PurchaseOrder order) {
         ObjectNode asJson = mapper.createObjectNode()
                 .put("id", order.getId())
                 .put("customerId", order.getCustomerId())
