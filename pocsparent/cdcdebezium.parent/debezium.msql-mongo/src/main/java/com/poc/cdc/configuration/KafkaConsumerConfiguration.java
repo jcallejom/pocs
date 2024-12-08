@@ -1,9 +1,8 @@
 package com.poc.cdc.configuration;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,11 +13,13 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import com.poc.cdc.component.kafka.KafkaErrorHandler;
+import com.poc.cdc.component.kafka.KafkaCommonErrorHandler;
 import com.poc.cdc.model.event.Event;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
@@ -44,7 +45,10 @@ public class KafkaConsumerConfiguration {
   public ConcurrentKafkaListenerContainerFactory<String, Event> kafkaListenerContainerFactory() {
     ConcurrentKafkaListenerContainerFactory<String, Event> factory = new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory());
-    factory.setErrorHandler(new KafkaErrorHandler());
+    factory.setCommonErrorHandler(new KafkaCommonErrorHandler());
+    /*NOTE ErrorHandler @deprecated in favor of {@link #setCommonErrorHandler(CommonErrorHandler) */
+//    factory.setErrorHandler(new KafkaErrorHandler());
+    
     return factory;
   }
 

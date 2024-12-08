@@ -10,9 +10,9 @@ initEnvironment(){
 }
 
 registerConnector(){
-  printf "\nRegistering Debezium connector Oracle...\n"
+  printf "\nRegistering Debezium connector...\n"
   sleep 20
-  curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @"$BASEDIR"/debezium/postgres-connector.json > /dev/null 
+  curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @"$BASEDIR"/debezium/connector-mysql.json > /dev/null
 }
 
 initEnvironment

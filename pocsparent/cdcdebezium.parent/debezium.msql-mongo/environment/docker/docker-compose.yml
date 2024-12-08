@@ -38,9 +38,9 @@ services:
     container_name: connect
     ports:
       - 8083:8083
-    volumes:
+    #volumes:
         #allow *.sql, *.sql.gz, or *.sh and is execute only if data directory is empty
-        - ./kafka/ojdbc8.jar:/kafka/libs/ojdbc8.jar
+        # - ./kafka/ojdbc8.jar:/kafka/libs/ojdbc8.jar
         # - ./../kafka/ojdbc8.jar:/kafka/libs/ojdbc8.jar
     environment:
       - BOOTSTRAP_SERVERS=kafka:9092
@@ -66,7 +66,7 @@ services:
       - KAFKA_HOST=kafka:9092
       - KAFKA_GROUP=replicator-dev
       - KAFKA_TOPIC_PRODUCT=dbserver1.inventory.products
-      - KAFKA_TOPIC_CUSTOMER=server1.C__DBZUSER.CUSTOMERS
+      - KAFKA_TOPIC_CUSTOMER=dbserver1.inventory.customers
     links:
       - kafka
       - mongo
@@ -105,13 +105,18 @@ services:
       - mysql
     ports:
        - 9090:8080
- ##########################################################################     
- #dbeaver service
- ##########################################################################       
+##########################################################################     
+#dbeaver service
+##########################################################################       
   dbeaver:
     image: dbeaver/cloudbeaver
     restart: always
     ports:
       - 8978:8978
+    volumes: 
+       - ./../cloudbeaver_data:/opt/cloudbeaver/workspace   
     depends_on:
       - mysql
+volumes:
+    cloudbeaver_data:
+       driver: local    
