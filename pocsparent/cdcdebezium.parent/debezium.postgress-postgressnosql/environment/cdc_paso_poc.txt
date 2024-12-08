@@ -47,12 +47,10 @@ docker exec -it -e ORACLE_SID=ORCLPDB1 oracle21c sqlplus c##dbzuser@ORCLPDB1
  
  docker exec -e ORACLE_SID=ORCLPDB1 -it oracle21c sqlplus sys@ORCLPDB1
  
-curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @environment/debezium/connector-mysql.json > /dev/null
 curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @debezium/connector-mysql.json > /dev/null
 
 curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @debezium/connector-oracle.json > /dev/null
 
-curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @environment/debezium/postgres-connector.json > /dev/null
 ver topic de kakfka
 docker exec -it kafka /kafka/bin/kafka-console-consumer.sh \
   --bootstrap-server 0.0.0.0:9092 \
@@ -62,7 +60,7 @@ docker exec -it kafka /kafka/bin/kafka-console-consumer.sh \
 
 
     spring.datasource.url= jdbc:oracle:thin:@localhost:1521/xe
-    spring.datasource.username=springboot
+    spring.datasource.username=pringboot
     spring.datasource.password=springboot1
     spring.datasource.driver-class-name= oracle.jdbc.OracleDriver
 	

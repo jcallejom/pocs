@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: quay.io/debezium/zookeeper:2.1.1.Final
+    ports:
+     - 2181:2181
+     - 2888:2888
+     - 3888:3888
+  kafka:
+    image: quay.io/debezium/kafka:2.1.1.Final
+    ports:
+     - 9092:9092
+    links:
+     - zookeeper
+    environment:
+     - ZOOKEEPER_CONNECT=zookeeper:2181
+  connect:
+    image: quay.io/debezium/connect:2.1.1.Final
+    ports:
+     - 8083:8083
+    links:
+     - kafka
+     - order-db
+    environment:
+     - BOOTSTRAP_SERVERS=kafka:9092
+     - GROUP_ID=1
+     - CONFIG_STORAGE_TOPIC=my_connect_configs
+     - OFFSET_STORAGE_TOPIC=my_connect_offsets
+     - STATUS_STORAGE_TOPIC=my_connect_statuses
+     - KAFKA_LOG4J_LOGGERS=io.debezium.connector=DEBUG
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092,zookeeper:2181"
+    depends_on:
+      - kafka
+      - zookeeper
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8090:8080
+  order-service:
+    build: ./order-service
+    environment:
+      SPRING_PROFILES_ACTIVE: "docker" 
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-db:5432/orderdb?currentSchema=inventory
+    ports:
+      - "8080:8080"
+    depends_on:
+      - order-db
+  order-db:
+    image: quay.io/debezium/example-postgres:2.1.1.Final
+    ports:
+     - 5433:5432
+    healthcheck:
+      test: "pg_isready -U postgresuser -d orderdb"
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    environment:
+     - POSTGRES_USER=postgresuser
+     - POSTGRES_PASSWORD=postgrespw
+     - POSTGRES_DB=orderdb

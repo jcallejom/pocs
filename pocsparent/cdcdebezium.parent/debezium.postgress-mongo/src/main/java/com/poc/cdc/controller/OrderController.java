@@ -23,7 +23,7 @@ public class OrderController {
 	public OrderController(OrderService orderService) {
 		this.orderService = orderService;
 	}
-
+	
 	@PostMapping(consumes = "application/json")
 	public OrderOperationResponse addOrder(@RequestBody CreateOrderRequest createOrderRequest) {
 		PurchaseOrder order = createOrderRequest.toOrder();
