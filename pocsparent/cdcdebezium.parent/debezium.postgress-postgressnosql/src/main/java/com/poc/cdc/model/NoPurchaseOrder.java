@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@TypeDef(name = "hstore", typeClass = HstoreUserType.class)
+//@TypeDef(name = "hstore", typeClass = HstoreUserType.class)
 public class NoPurchaseOrder {
 
 	@Id
@@ -40,11 +40,11 @@ public class NoPurchaseOrder {
 	//@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "purchaseOrder")
 	//private List<OrderLine> lineItems;
 
-	@Type(type = "hstore")
+//	@Type(type = "hstore")
     @Column(columnDefinition = "hstore")
 	private Map<String, String> lineItems = new HashMap<String, String>();
 	
-	public BigDecimal getTotalValue() {
-        return lineItems.stream().map(OrderLine::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+//	public BigDecimal getTotalValue() {
+//        return lineItems.stream().map(OrderLine::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+//    }
 }

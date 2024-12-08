@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 // courtesy of: http://backtothefront.net/2011/storing-sets-keyvalue-pairs-single-db-column-hibernate-postgresql-hstore-type/
@@ -41,18 +42,7 @@ public class HstoreUserType implements UserType {
         return o.hashCode();
     }
 
-    @Override
-    public Object nullSafeGet(ResultSet resultSet, String[] strings, SessionImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
-        String col = strings[0];
-        String val = resultSet.getString(col);
-        return HstoreHelper.toMap(val);
-    }
-
-    @Override
-    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
-        String s = HstoreHelper.toString((Map) o);
-        preparedStatement.setObject(i, s, Types.OTHER);
-    }
+    
 
     public boolean isMutable() {
         return true;
@@ -74,4 +64,38 @@ public class HstoreUserType implements UserType {
          */
         return new int[] { Types.INTEGER };
     }
+
+	@Override
+	public int getSqlType() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Object nullSafeGet(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner)
+			throws SQLException {
+	        String val = rs.getString(position);
+	        return HstoreHelper.toMap(val);
+	}
+
+	@Override
+	public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
+			throws SQLException {
+        String s = HstoreHelper.toString((Map) value);
+        st.setObject(index, s, Types.OTHER);
+		
+	}
+	
+//	@Override
+//    public Object nullSafeGet(ResultSet resultSet, String[] strings, SessionImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
+//        String col = strings[0];
+//        String val = resultSet.getString(col);
+//        return HstoreHelper.toMap(val);
+//    }
+//
+//    @Override
+//    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
+//        String s = HstoreHelper.toString((Map) o);
+//        preparedStatement.setObject(i, s, Types.OTHER);
+//    }
 }

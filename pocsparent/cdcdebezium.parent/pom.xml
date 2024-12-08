@@ -18,7 +18,7 @@
 	<module>debezium.oracle-mongo</module>
     <module>debezium.postgress-mongo</module> 
     <module>debezium.postgress-oracle</module> 
-    
+    <module>debezium.postgress-postgressnosql</module> 
   </modules>
   
 </project>
