@@ -6,11 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class EventListener {
-	
-//	 public void listencustomerEvents(Event event ,@Headers Map<String, Object> headers);
-//	 public void listenorderEvents(Event event,@Headers Map<String, Object> headers);
-//  
+public class ManagentEventListener {
+  
 //		  private final IntegrationService integrationService;
 //		  
 //		  public EventListener (IntegrationService integrationService){

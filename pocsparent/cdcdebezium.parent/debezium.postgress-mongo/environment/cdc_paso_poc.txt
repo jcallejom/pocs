@@ -9,9 +9,7 @@ docker exec -it kafka /kafka/bin/kafka-console-consumer.sh \
   --property print.key=true \
   --topic server1.C__DBZUSER.CUSTOMERS
 
-curl --location --request POST 'localhost:8080/order' \
---header 'Content-Type: application/json' \
---data-raw '{
+ curl --location --request POST 'localhost:8080/order' --header 'Content-Type: application/json' --data-raw '{
     "customerId": 3,
     "orderDate": "2023-01-02 15:43:57",
     "lineItems": [
@@ -23,4 +21,18 @@ curl --location --request POST 'localhost:8080/order' \
         }
     ]
 }'
-
+----------------------------
+SELECT id, customer_id, order_date
+FROM inventory.purchase_order;
+SELECT id, item, quantity, status, total_price, order_id
+FROM inventory.order_line;
+SELECT id, aggregateid, aggregatetype, payload, "timestamp", "type"
+FROM inventory.outbox;
+SELECT id, order_date, purchaser, quantity, product_id
+FROM inventory.orders;
+SELECT id, first_name, last_name, email
+FROM inventory.customers;
+SELECT id, "name", description, weight
+FROM inventory.products;
+SELECT product_id, quantity
+FROM inventory.products_on_hand;
