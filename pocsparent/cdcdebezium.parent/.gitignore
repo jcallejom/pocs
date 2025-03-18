@@ -1,8 +1,22 @@
-cloudbeaver_data/
+.sonarlint
+.metadata
+workarchetypes.rar
+architectural-pattern/
+demo/
+
 target/
 bin/
-!.mvn/wrapper/maven-wrapper.jar
 
+release.properties
+buildNumber.properties
+dependency-reduced-pom.xml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
 ### STS ###
 .apt_generated
 .classpath
@@ -14,6 +28,7 @@ bin/
 
 ### IntelliJ IDEA ###
 .idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -25,4 +40,4 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-target/
+

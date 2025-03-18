@@ -1,0 +1,80 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: zookeeper:latest
+    restart: always
+    container_name: zookeeper
+    ports:
+     - 2181:2181
+     - 2888:2888
+     - 3888:3888
+    environment:
+     - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka
+    restart: always
+    ports:
+     - 9092:9092
+    depends_on:
+     - zookeeper
+    environment:
+     #- KAFKA_NODE_ID=1
+      KAFKA_ENABLE_KRAFT: yes
+     #- KAFKA_BROKER_ID=1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_LISTENERS: LISTENER_SEVICE://:9092,LISTENER_KAFDROP://kafka:29092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_SEVICE://localhost:9092,LISTENER_KAFDROP://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_SEVICE:PLAINTEXT, LISTENER_KAFDROP:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_SEVICE
+      CLUSTER_ID: 'MTkwSDkzMDg5KTdFNDJCRU'
+ 
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:29092,zookeeper:2181"
+    depends_on:
+      - kafka
+      - zookeeper
+ 
+##########################################################################     
+#dbeaver service
+##########################################################################       
+  dbeaver:
+    image: dbeaver/cloudbeaver
+    restart: always
+    ports:
+      - 8978:8978
+    volumes: 
+       - ./../../../cloudbeaver_data:/opt/cloudbeaver/workspace   
+    depends_on:
+      - oracle21xe_db
+  oracle21xe_db:
+        #image: container-registry.oracle.com/database/express:latest
+        image: container-registry.oracle.com/database/express:latest
+        container_name: oracle21xe_db
+        restart: always
+        ports:
+          - 1521:1521
+          - 5500:5500
+        environment:
+        #Sid database
+        #- ORACLE_SID=sorteo
+        #optional this is default user 
+        - ORACLE_PDB=oracleuser
+        # optional change user SYSTEM password 
+        - ORACLE_PWD=oraclepw
+        volumes:
+            #allow *.sql, *.sql.gz, or *.sh and is execute only if data directory is empty
+            - ./dbfiles:/docker-entrypoint-initdb.d
+            - ./../../../oracle_data:/opt/oracle/oradata
+            #- ./../oracle_data:/u01/app/oracle/oradata
+volumes:
+    cloudbeaver_data:
+       driver: local
+    oracle_data:
+       driver: local  

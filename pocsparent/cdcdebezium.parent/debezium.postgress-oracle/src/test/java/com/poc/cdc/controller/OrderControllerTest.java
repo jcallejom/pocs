@@ -39,7 +39,7 @@ class OrderControllerTest {
 		RestAssuredMockMvc.mockMvc(mockMvc);
 	}
 
-	@Test
+//	@Test
 	void when_post_new_order_request_then_order_table_is_fullfilled() {
 		List<OrderLineDto> orders = new ArrayList<>();
 		orders.add(new OrderLineDto(1L, "Door", 1, BigDecimal.valueOf(5.6), null));

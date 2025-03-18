@@ -1,19 +1,27 @@
-package com.poc.cdc.event.consumer;
+package com.poc.cdc.infratructure.consumers;
 
+import java.util.Map;
+
+import org.springframework.messaging.handler.annotation.Headers;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import com.poc.cdc.infratructure.consumers.model.Event;
 
-@Slf4j
-@Component
-public class EventListener {
+
+public interface IEventListener {
 	
-//	 public void listencustomerEvents(Event event ,@Headers Map<String, Object> headers);
-//	 public void listenorderEvents(Event event,@Headers Map<String, Object> headers);
+//	 public void listencustomerEvents(@Payload Event event ,@Headers Map<String, Object> headers);
+	 
+//	 public void listenorderEvents(@Payload Event event,@Headers Map<String, Object> headers);
+	 
+	 public void listencustomerEvents(Event event );
+//	 
+//	 public void listenorderEvents(Event event);
 //  
 //		  private final IntegrationService integrationService;
 //		  
-//		  public EventListener (IntegrationService integrationService){
+//		  public IEventListener (IntegrationService integrationService){
 //		    this.integrationService = integrationService;
 //		  }
 

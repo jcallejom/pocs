@@ -1,4 +1,4 @@
-package com.poc.cdc.event.consumer.model;
+package com.poc.cdc.infratructure.consumers.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,12 +15,10 @@ public class EventPayload {
   
 //  private EventSource source;
   
-  private String eventType;
-  private String aggregatetype;
-  private String aggregateid;
+//  private String eventType;
+//  private String aggregatetype;
+//  private String aggregateid;
   private HashMap<String,Object> headers;
   private HashMap<String,Object> payload;
-  
-
   
 }

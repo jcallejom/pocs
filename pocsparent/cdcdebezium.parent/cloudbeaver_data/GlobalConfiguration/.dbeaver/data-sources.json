@@ -35,6 +35,21 @@
 				"closeIdleConnection": true,
 				"auth-model": "native"
 			}
+		},
+		"mysql8-193aa421c5c-586dd78e5913fd71": {
+			"provider": "mysql",
+			"driver": "mysql8",
+			"name": "MySQL@mysql",
+			"save-password": true,
+			"configuration": {
+				"host": "mysql",
+				"port": "3306",
+				"url": "jdbc:mysql://mysql:3306/",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"auth-model": "native"
+			}
 		}
 	},
 	"connection-types": {

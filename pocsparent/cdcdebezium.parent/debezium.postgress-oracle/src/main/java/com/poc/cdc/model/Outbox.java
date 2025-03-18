@@ -1,7 +1,5 @@
 package com.poc.cdc.model;
 
-import java.time.Instant;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -17,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Outbox {
+public class Outbox implements EventModel{
 	
 	@Id
 	private String id;
