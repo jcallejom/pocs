@@ -23,7 +23,7 @@ public enum SourceDatabaseOperation {
   
   public static SourceDatabaseOperation fromId(String id){
     return Arrays.stream(SourceDatabaseOperation.values())
-      .filter(v -> v.id.equals(id))
+      .filter(v -> v.id.equalsIgnoreCase(id))
       .findFirst()
       .orElseThrow( () -> new EnumNotFoundError(ENUM_NOT_FOUND_ERROR_MESSAGE));
   }

@@ -1,8 +1,7 @@
 .sonarlint
 .metadata
-workarchetypes.rar
-architectural-pattern/
-demo/
+oracle_data
+cloudbeaver_data
 
 target/
 bin/

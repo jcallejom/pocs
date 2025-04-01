@@ -1,14 +1,74 @@
 
 1 curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @environment/debezium/postgres-connector.json.json > /dev/null
 curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @debezium.postgress-mongo/environment/debezium/postgres-connector.json > /dev/null
+curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @debezium/postgres-connector.json
+
+ver config de kafka
+docker exec -it kafka /bin/bash
+ver config de kafka
+docker exec -it kafka /bin/bash
+crear topic
+bin/kafka-topics.sh \
+--bootstrap-server kafka:9092 \
+--create --topic prototype4j-topic \
+--partitions 5 \
+--replication-factor 1
+modificar topic
+bin/kafka-topics.sh \
+--bootstrap-server kafka:9092 \
+--alter --topic prototype4j-topic \
+--partitions 40
+*Nota se puede subir pero no reducir el numero de particiones
+borrar topic
+bin/kafka-topics.sh \
+--bootstrap-server kafka:9092 \
+--delete --topic prototype4j-topic 
+Agregar configuración a topic
+bin/kafka-configs.sh \
+--bootstrap-server kafka:9092 \
+-- entity -type topics \
+--entity-name prototype4j-topic  \
+--alter --add-config x=y 
+
+Eliminar configuración topic
+bin/kafka-configs.sh \
+--bootstrap-server kafka:9092 \
+-- entity -type topics \
+--entity-name prototype4j-topic  \
+--alter --delete-config x 
+
+Listando topics
+bin/kafka-topics.sh --list --bootstrap-server kafka:9092
+topic especifico
+bin/kafka-topics.sh --describe --bootstrap-server kafka:9092 --topic dbserver1.inventory.products
+bin/kafka-topics.sh --describe --bootstrap-server kafka:9092 --topic prototype4j-topic
+
+crear producers
+bin/kafka-console-producer.sh --topic prototype4j-topic --bootstrap-server kafka:9092
+
+crear consumers
+bin/kafka-console-consumer.sh --topic prototype4j-topic --bootstrap-server kafka:9092
+crear un consumer que coja todos los mensajes del topic desde el principio
+bin/kafka-console-consumer.sh --topic prototype4j-topic --from-beginning --bootstrap-server kafka:9092
+
+con esto vemos la key y el mensaje si sale null a la izquierda es que no usamos mensaje key
+bin/kafka-console-consumer.sh --topic prototype4j-topic --from-beginning --bootstrap-server kafka:9092 \
+--property print.key=true --property key.separator="-"
+Limpiar ambiente(resetar todos los topic) = borrar Kafka log y zookepper
+
+------------
 
 ver topic de kakfka
 docker exec -it kafka /kafka/bin/kafka-console-consumer.sh \
   --bootstrap-server 0.0.0.0:9092 \
   --from-beginning \
   --property print.key=true \
-  --topic server1.C__DBZUSER.CUSTOMERS
-
+  --topic dbserver1.inventory.products
+  
+  -----------------------
+ --topic server1.C__DBZUSER.CUSTOMERS 
+  --topic dbserver1.inventory.products
+---------------------------
  curl --location --request POST 'localhost:8080/order' --header 'Content-Type: application/json' --data-raw '{
     "customerId": 3,
     "orderDate": "2023-01-02 15:43:57",

@@ -1,0 +1,26 @@
+{
+  "name": "products-connector3",
+  "config": {
+    "debezium.source.schema.history.internal":"io.debezium.storage.file.history.FileSchemaHistory",
+    "debezium.source.schema.history.internal.file.filename":"data/schema_history.dat",
+    "connector.class": "io.debezium.connector.oracle.OracleConnector",
+    "tasks.max": "1",
+    "topic.prefix": "server1",
+    "database.hostname": "dbz_oracle21",
+    "database.port": "1521",
+    "database.user": "c##dbzuser",
+    "database.password": "dbz",
+    "database.dbname": "ORCLCDB",
+    "database.pdb.name": "ORCLPDB1",
+    "database.server.name": "server1",
+    "database.include.list": "C##DBZUSER",
+    "database.schema": "C##DBZUSER",
+    "table.include.list": "C##DBZUSER.PRODUCTS",
+    "database.url": "jdbc:oracle:thin:@dbz_oracle21:1521:ORCLCDB",
+    "database.history.skip.unparseable.ddl": "true",
+    "include.schema.changes": "true",
+    "database.connection.adapter": "LogMiner",
+    "schema.history.internal.kafka.bootstrap.servers" : "kafka:9092",
+    "schema.history.internal.kafka.topic": "schema-changes"
+  }
+}

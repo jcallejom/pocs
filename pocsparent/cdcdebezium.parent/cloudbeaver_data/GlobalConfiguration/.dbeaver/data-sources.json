@@ -50,6 +50,169 @@
 				"closeIdleConnection": true,
 				"auth-model": "native"
 			}
+		},
+		"oracle_thin-195c48ea79a-72499548103fa4c2": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "ORCLCDB@dbz_oracle21",
+			"save-password": true,
+			"configuration": {
+				"host": "dbz_oracle21",
+				"port": "1521",
+				"database": "ORCLCDB",
+				"url": "jdbc:oracle:thin:@dbz_oracle21:1521:ORCLCDB",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-sid-service@": "SID",
+					"oracle.logon-as": "SYSDBA"
+				},
+				"auth-model": "oracle_native"
+			}
+		},
+		"oracle_thin-195c49075db-7606ebb29950dcc8": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "ORCLPDB1@dbz_oracle21",
+			"save-password": true,
+			"configuration": {
+				"host": "dbz_oracle21",
+				"port": "1521",
+				"database": "ORCLPDB1",
+				"url": "jdbc:oracle:thin:@//dbz_oracle21:1521/ORCLPDB1",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-sid-service@": "SERVICE",
+					"oracle.logon-as": "SYSDBA"
+				},
+				"auth-model": "oracle_native"
+			}
+		},
+		"oracle_thin-195d7abfe45-82e1402db8dfd28": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "ORXE@dbz_oracle21_xe",
+			"save-password": true,
+			"configuration": {
+				"host": "dbz_oracle21xe",
+				"port": "1521",
+				"database": "xe",
+				"url": "jdbc:oracle:thin:@dbz_oracle21xe:1521:xe",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"oracle.logon-as": "Normal",
+					"@dbeaver-sid-service@": "SID",
+					"show-only-one-schema@": "false"
+				},
+				"auth-model": "oracle_native"
+			}
+		},
+		"oracle_thin-195e12a5a71-263b22bc23e7417": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "ORXE@dbz_oracle21",
+			"save-password": true,
+			"configuration": {
+				"host": "dbz_oracle21xe",
+				"port": "1521",
+				"url": "jdbc:oracle:thin:@dbz_oracle21xe:1521:",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"oracle.logon-as": "Normal",
+					"@dbeaver-sid-service@": "SID",
+					"show-only-one-schema@": "true"
+				},
+				"auth-model": "oracle_native"
+			}
+		},
+		"oracle_thin-195e15f3e51-353cf462c16027d4": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "ORXE@dbz_oracle21xe_C##DBZUSER",
+			"save-password": true,
+			"configuration": {
+				"host": "dbz_oracle21xe",
+				"port": "1521",
+				"database": "xe",
+				"url": "jdbc:oracle:thin:@dbz_oracle21xe:1521:xe",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-sid-service@": "SID",
+					"oracle.logon-as": "Normal",
+					"show-only-one-schema@": "true"
+				},
+				"auth-model": "oracle_native"
+			}
+		},
+		"oracle_thin-195e631b2db-3f35e5a2036edfb0": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "ORXE@dbz_oracle21XEPDB1_C##DBZUSER",
+			"save-password": true,
+			"configuration": {
+				"host": "dbz_oracle21xe",
+				"port": "1521",
+				"database": "XEPDB1",
+				"url": "jdbc:oracle:thin:@//dbz_oracle21xe:1521/XEPDB1",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-sid-service@": "SERVICE",
+					"oracle.logon-as": "Normal"
+				},
+				"auth-model": "oracle_native"
+			}
+		},
+		"oracle_thin-195e65d9485-5e98ff42cd045c9a": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "ORCLPDB1@dbz_oracle21_c##dbzuser",
+			"save-password": true,
+			"configuration": {
+				"host": "dbz_oracle21",
+				"port": "1521",
+				"database": "ORCLPDB1",
+				"url": "jdbc:oracle:thin:@//dbz_oracle21:1521/ORCLPDB1",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-sid-service@": "SERVICE",
+					"oracle.logon-as": "Normal",
+					"show-only-one-schema@": "true"
+				},
+				"auth-model": "oracle_native"
+			}
+		},
+		"oracle_thin-195eccc6bf9-70f8d962f41311cb": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "ORCLPDB1@dbz_oracle21_debezium",
+			"save-password": true,
+			"configuration": {
+				"host": "dbz_oracle21",
+				"port": "1521",
+				"database": "ORCLPDB1",
+				"url": "jdbc:oracle:thin:@//dbz_oracle21:1521/ORCLPDB1",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-sid-service@": "SERVICE",
+					"oracle.logon-as": "Normal"
+				},
+				"auth-model": "oracle_native"
+			}
 		}
 	},
 	"connection-types": {

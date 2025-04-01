@@ -1,6 +1,9 @@
 #!/bin/sh
 
+## cambiar¿?ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/ORCLCDB' scope=spfile; 
+#1.Configure Oracle: Archive logs
 # Set archive log mode and enable GG replication
+#printf "\nConfigure Oracle: Archive logs...\n"
 ORACLE_SID=ORCLCDB
 export ORACLE_SID
 sqlplus /nolog <<- EOF
@@ -16,7 +19,14 @@ sqlplus /nolog <<- EOF
 	exit;
 EOF
 
+#Configurar Oracle: Redo logs ¿?
+#ALTER DATABASE CLEAR LOGFILE GROUP 2;
+#ALTER DATABASE DROP LOGFILE GROUP 2;
+#ALTER DATABASE ADD LOGFILE GROUP 2 ('/opt/oracle/oradata/ORCLCDB/redo01.log') size 400M REUSE;
+
+#
 # Enable LogMiner required database features/settings
+#printf "\nConfigure Oracle: Supplemental Logging...\n"
 sqlplus sys/Oradoc_db1@//localhost:1521/ORCLCDB.localdomain as sysdba <<- EOF
   ALTER DATABASE ADD SUPPLEMENTAL LOG DATA;
   ALTER PROFILE DEFAULT LIMIT FAILED_LOGIN_ATTEMPTS UNLIMITED;

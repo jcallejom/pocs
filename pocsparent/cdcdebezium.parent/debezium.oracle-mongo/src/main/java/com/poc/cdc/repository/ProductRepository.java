@@ -1,8 +1,8 @@
 package com.poc.cdc.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.poc.cdc.model.entity.ProductEntity;
 
 
-public interface ProductRepository extends CrudRepository<ProductEntity, String>{}
+public interface ProductRepository extends MongoRepository<ProductEntity, String>{}

@@ -13,7 +13,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import com.poc.cdc.component.kafka.KafkaCommonErrorHandler;
+import com.poc.cdc.component.kafka.KafkaErrorHandler;
 import com.poc.cdc.model.event.Event;
 
 import lombok.Getter;
@@ -45,9 +45,9 @@ public class KafkaConsumerConfiguration {
   public ConcurrentKafkaListenerContainerFactory<String, Event> kafkaListenerContainerFactory() {
     ConcurrentKafkaListenerContainerFactory<String, Event> factory = new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory());
-    factory.setCommonErrorHandler(new KafkaCommonErrorHandler());
+//    factory.setCommonErrorHandler(new KafkaCommonErrorHandler());
     /*NOTE ErrorHandler @deprecated in favor of {@link #setCommonErrorHandler(CommonErrorHandler) */
-//    factory.setErrorHandler(new KafkaErrorHandler());
+    factory.setErrorHandler(new KafkaErrorHandler());
     
     return factory;
   }

@@ -30,12 +30,13 @@ public class ManagementServiceImpl implements ManagementService {
     switch (operation){
       case CREATE:
       case UPDATE:
-        Product product = Product
-          .builder()
-          .id(payload.getAfter().get("id").toString())
-          .name(payload.getAfter().get("name").toString())
-          .description(payload.getAfter().get("description").toString())
-          .weight(Double.parseDouble(payload.getAfter().get("weight").toString()))
+    	  log.info("UPDATE successfully");  
+        Product product = Product.builder()
+          .id(payload.getAfter().get("ID").toString())
+          .name(payload.getAfter().get("NAME").toString())
+          .description(payload.getAfter().get("DESCRIPTION").toString())
+          .weight(3.14d)
+//          .weight(Double.parseDouble(payload.getAfter().get("WEIGHT").toString()))
           .build();
         productService.create(product);
         break;

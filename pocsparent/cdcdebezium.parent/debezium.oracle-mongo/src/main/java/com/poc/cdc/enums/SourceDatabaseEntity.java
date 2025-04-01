@@ -11,8 +11,8 @@ import com.poc.cdc.exception.EnumNotFoundError;
 @Getter
 public enum SourceDatabaseEntity {
   
-  PRODUCT("products"),
-  CUSTOMER("customers");
+  PRODUCT("PRODUCTS"),
+  CUSTOMER("CUSTOMERS");
   
   private String id;
   

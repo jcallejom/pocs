@@ -1,42 +1,4 @@
-
-1 ejecutamos el doccke compose  up -d
-2 docker ps -->verificamos conector de delbezium puerto 8003
-3.registrar propiedades del conector en yml (springboot-debezium-mongo-replicator\environment\debezium)
-curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @conector-mysql.json
-4
-
-  mysql:
-    image: debezium/example-mysql:1.5
-    container_name: mysql
-    ports:
-      - 1521:1521 
-    environment:
-	  
-   -e ORACLE_SID=ORCLCDB 
-  -e ORACLE_PDB=ORCLPDB1 
-  -e ORACLE_PWD=oraclepw 
- docker exec -e ORACLE_SID=ORCLCDB -it oracle21c sqlplus sys as sysdba
- 
-SELECT GROUP#, BYTES/1024/1024 SIZE_MB, STATUS FROM V$LOG ORDER BY 1;
-hacemos para los 3 grupos
-ALTER DATABASE CLEAR LOGFILE GROUP 3;
-ALTER DATABASE DROP LOGFILE GROUP 3;
-ALTER DATABASE ADD LOGFILE GROUP 3 ('/opt/oracle/oradata/ORCLCDB/redo03.log') size 400M REUSE;
-
-
-cambiar de log file 
-ALTER DATABASE OPEN;
-ALTER SYSTEM SWITCH LOGFILE;
-modificamoe el grupo 1 
-
-CONNECT sys/oraclepw@ORCLCDB as sysdba;
-CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
-
-CONNECT sys/oraclepw@ORCLPDB1 as sysdba;
-CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/ORCLPDB1/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
-
-CREATE USER c##dbzuser IDENTIFIED BY dbz DEFAULT TABLESPACE LOGMINER_TBS QUOTA UNLIMITED ON LOGMINER_TBS CONTAINER=ALL;
-
+--docker
 docker exec -it -e ORACLE_SID=ORCLPDB1 dbz_oracle21 sqlplus c##dbzuser@ORCLPDB1
 
 docker exec -it -e ORACLE_SID=ORCLPDB1 oracle21c sqlplus c##dbzuser@ORCLPDB1
@@ -47,9 +9,25 @@ docker exec -it -e ORACLE_SID=ORCLPDB1 oracle21c sqlplus c##dbzuser@ORCLPDB1
  
  docker exec -e ORACLE_SID=ORCLPDB1 -it oracle21c sqlplus sys@ORCLPDB1
  
+ ---curlss
+ 
 curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @debezium/connector-mysql.json > /dev/null
 
 curl -s -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @debezium/connector-oracle.json > /dev/null
+
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @debezium/connector-oracle-xa.json 
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d @debezium/connector-oracle.json
+
+
+
+su - oracle
+
+orapwd file=$ORACLE_HOME/dbs/orapw$ORACLE_SID password=Euro2016 entries=5
+
+which means: write to a file $ORACLE_HOME/dbs/orapw$ORACLE_SID a password Euro2016 which is used by SYSDBA
+
+Now you can connect with sqldeveloper: username sys, password Euro2016 with chosen SYSDBA , hostname, port, sid from $ORACLE_SID
+
 
 ver topic de kakfka
 docker exec -it kafka /kafka/bin/kafka-console-consumer.sh \
@@ -81,4 +59,215 @@ docker exec -it kafka /kafka/bin/kafka-console-consumer.sh \
     <artifactId>ojdbc8</artifactId>
     <version>19.3.0.0</version>
 </dependency
+
+--Configurar Oracle: archived logs
+docker exec -it dbz_oracle21 /bin/bash
+docker exec -e ORACLE_SID=ORCLCDB -it dbz_oracle21 sqlplus sys as sysdba
+docker exec -e ORACLE_SID=ORCLPDB1 -it dbz_oracle21 sqlplus sys as sysdba
+sqlplus sys as sysdba
+
+SELECT LOG_MODE FROM V$DATABASE;
+
+ALTER SYSTEM SET db_recovery_file_dest_size = 10G;
+ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/ORCLCDB' scope=spfile;
+SHUTDOWN IMMEDIATE
+STARTUP MOUNT
+ALTER DATABASE ARCHIVELOG;
+ALTER DATABASE OPEN;
+ARCHIVE LOG LIST;
+
+SELECT LOG_MODE FROM V$DATABASE;
+
+--opcional Configurar Oracle: Redo logs
+SELECT GROUP#, BYTES/1024/1024 SIZE_MB, STATUS FROM V$LOG ORDER BY 1;
+SELECT GROUP#, MEMBER FROM V$LOGFILE ORDER BY 1, 2;
+
+ALTER DATABASE CLEAR LOGFILE GROUP 1;
+ALTER DATABASE DROP LOGFILE GROUP 1;
+ALTER DATABASE ADD LOGFILE GROUP 1 ('/opt/oracle/oradata/ORCLCDB/redo01.log') size 400M REUSE;
+
+--cambiamos para poder actualizar los siguientes
+
+ALTER SYSTEM SWITCH LOGFILE;
+SELECT GROUP#, BYTES/1024/1024 SIZE_MB, STATUS FROM V$LOG ORDER BY 1;
+ALTER DATABASE CLEAR LOGFILE GROUP 2;
+ALTER DATABASE DROP LOGFILE GROUP 2;
+ALTER DATABASE ADD LOGFILE GROUP 2 ('/opt/oracle/oradata/ORCLCDB/redo02.log') size 400M REUSE;
+--cambiamos para poder actualizar los siguientes
+
+ALTER SYSTEM SWITCH LOGFILE; 
+ALTER DATABASE CLEAR LOGFILE GROUP 3;
+ALTER DATABASE DROP LOGFILE GROUP 3;
+ALTER DATABASE ADD LOGFILE GROUP 3 ('/opt/oracle/oradata/ORCLCDB/redo03.log') size 400M REUSE;
+
+1
+--Configurar Oracle: Supplemental Logging --> luego en tablas hay que añadirlo
+ALTER DATABASE ADD SUPPLEMENTAL LOG DATA;
+ALTER PROFILE DEFAULT LIMIT FAILED_LOGIN_ATTEMPTS UNLIMITED;
+2
+--Configurar Oracle: User setup
+CONNECT sys/oraclepw@ORCLCDB as sysdba;
+CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/logminer_tbs.dbf'
+  SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+CONNECT sys/oraclepw@ORCLPDB1 as sysdba;
+CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/ORCLPDB1/logminer_tbs.dbf'
+  SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+3
+CONNECT sys/oraclepw@ORCLCDB as sysdba;
+CREATE USER c##dbzuser IDENTIFIED BY dbz DEFAULT TABLESPACE LOGMINER_TBS
+  QUOTA UNLIMITED ON LOGMINER_TBS
+  CONTAINER=ALL;
+
+
+
+GRANT CREATE SESSION TO c##dbzuser CONTAINER=ALL;
+GRANT SET CONTAINER TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$DATABASE TO c##dbzuser CONTAINER=ALL;
+GRANT FLASHBACK ANY TABLE TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ANY TABLE TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT_CATALOG_ROLE TO c##dbzuser CONTAINER=ALL;
+GRANT EXECUTE_CATALOG_ROLE TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ANY TRANSACTION TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ANY DICTIONARY TO c##dbzuser CONTAINER=ALL;
+GRANT LOGMINING TO c##dbzuser CONTAINER=ALL;
+
+GRANT CREATE TABLE TO c##dbzuser CONTAINER=ALL;
+GRANT LOCK ANY TABLE TO c##dbzuser CONTAINER=ALL;
+GRANT CREATE SEQUENCE TO c##dbzuser CONTAINER=ALL;
+
+GRANT EXECUTE ON DBMS_LOGMNR TO c##dbzuser CONTAINER=ALL;
+GRANT EXECUTE ON DBMS_LOGMNR_D TO c##dbzuser CONTAINER=ALL;
+
+GRANT SELECT ON V_$LOG TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOG_HISTORY TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOGMNR_LOGS TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOGMNR_CONTENTS TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOGMNR_PARAMETERS TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOGFILE TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$ARCHIVED_LOG TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$ARCHIVE_DEST_STATUS TO c##dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$TRANSACTION TO c##dbzuser CONTAINER=ALL;
+
+-- crear usuario donde se guardan las cosas
+CONNECT sys/oraclepw@ORCLPDB1 as sysdba;
+CREATE USER debezium IDENTIFIED BY dbz;
+GRANT CONNECT TO debezium;
+GRANT CREATE SESSION TO debezium;
+GRANT CREATE TABLE TO debezium;
+GRANT CREATE SEQUENCE to debezium;
+ALTER USER debezium QUOTA 100M on users;
+--
+CONNECT sys/oraclepw as sysdba;
+sqlplus sys/oraclepw@//localhost:1521/ORCLPDB1 as sysdba
+CONNECT sys/oraclepw@//localhost:1521/ORCLPDB1 as sysdba;
+---
+--crear imagen con configuracion
+docker commit dbz_oracle21 oracle21configured:v1
+  #replicator:
+  #  image: com.poc.cdc/replicator-mongodb:0.0.1-SNAPSHOT
+  #  container_name: replicator
+  #  environment:
+  #    - SPRING_DATA_MONGODB_USERNAME=admin
+  #    - SPRING_DATA_MONGODB_PASSWORD=admin1
+  #    - SPRING_DATA_MONGODB_HOST=mongo
+  #    - SPRING_DATA_MONGODB_PORT=27017
+  #    - SPRING_DATA_MONGODB_DATABASE=inventory
+  #    - SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE=admin
+  #    - KAFKA_HOST=kafka:9092
+  #    - KAFKA_GROUP=replicator-dev
+  #    - KAFKA_TOPIC_PRODUCT=dbserver1.inventory.products
+  #    - KAFKA_TOPIC_CUSTOMER=dbserver1.inventory.customers
+  #  links:
+  #    - kafka
+  #    - mongo
+  
+ ---oracle xe
+docker exec -e ORACLE_SID=XE -it dbz_oracle21xe sqlplus sys as sysdba
+docker exec  -e ORACLE_SID=XE -it dbz_oracle21xe /bin/bash
+sqlplus sys/oraclepw@XE as sysdba
+sqlplus / as sysdba
+
+
+sqlplus C##DBZUSER/dbz as sysdba
+sqlplus sys/oraclepw as sysdba
+SELECT LOG_MODE FROM V$DATABASE;
+
+
+---ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/XE' scope=spfile;
+-- ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/recovery_area' scope=spfile;
+mkdir /opt/oracle/oradata/recovery_area
+ALTER SYSTEM SET db_recovery_file_dest_size = 10G;
+ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/XE' scope=spfile;
+SHUTDOWN IMMEDIATE
+STARTUP MOUNT
+ALTER DATABASE ARCHIVELOG;
+ALTER DATABASE OPEN;
+ARCHIVE LOG LIST;
+ 
+--Configurar Oracle: Supplemental Logging --> luego en tablas hay que añadirlo
+ALTER DATABASE ADD SUPPLEMENTAL LOG DATA;
+ALTER PROFILE DEFAULT LIMIT FAILED_LOGIN_ATTEMPTS UNLIMITED;
+
+CONNECT sys/oraclepw as sysdba;
+--Configurar Oracle: User setup
+CONNECT sys/oraclepw@XE as sysdba;
+CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/XE/logminer_tbs.dbf'
+  SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+  
+CONNECT sys/"oraclepw@XE" as sysdba;
+DROP TABLESPACE logminer_tbs;
+
+--CONNECT sys/"oraclepw@XEPDB1" as sysdba;
+alter session set container=XEPDB1;
+CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/XE/XEPDB1/logminer_tbs.dbf'
+  SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+CONNECT sys/"oraclepw@XE" as sysdba;
+ CREATE USER dbzuser IDENTIFIED BY dbz DEFAULT TABLESPACE LOGMINER_TBS QUOTA UNLIMITED ON LOGMINER_TBS;
+CREATE USER c##dbzuser IDENTIFIED BY dbz DEFAULT TABLESPACE logminer_tbs 
+ QUOTA UNLIMITED ON logminer_tbs
+ CONTAINER=ALL;
+ 
+CREATE USER c##dbzuser IDENTIFIED BY dbz DEFAULT TABLESPACE logminer_tbs
+ QUOTA UNLIMITED ON logminer_tbs
+ PROFILE DEFAULT
+ ACCOUNT UNLOCK CONTAINER=ALL;
+
+
+
+  
+GRANT CREATE SESSION TO dbzuser CONTAINER=ALL;
+GRANT SET CONTAINER TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$DATABASE TO dbzuser CONTAINER=ALL;
+GRANT FLASHBACK ANY TABLE TO dbzuser CONTAINER=ALL;
+GRANT SELECT ANY TABLE TO dbzuser CONTAINER=ALL;
+GRANT SELECT_CATALOG_ROLE TO dbzuser CONTAINER=ALL;
+GRANT EXECUTE_CATALOG_ROLE TO dbzuser CONTAINER=ALL;
+GRANT SELECT ANY TRANSACTION TO dbzuser CONTAINER=ALL;
+GRANT SELECT ANY DICTIONARY TO dbzuser CONTAINER=ALL;
+GRANT LOGMINING TO dbzuser CONTAINER=ALL;
+
+GRANT CREATE TABLE TO dbzuser CONTAINER=ALL;
+GRANT LOCK ANY TABLE TO dbzuser CONTAINER=ALL;
+GRANT CREATE SEQUENCE TO dbzuser CONTAINER=ALL;
+
+GRANT EXECUTE ON DBMS_LOGMNR TO dbzuser CONTAINER=ALL;
+GRANT EXECUTE ON DBMS_LOGMNR_D TO dbzuser CONTAINER=ALL;
+
+GRANT SELECT ON V_$LOG TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOG_HISTORY TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOGMNR_LOGS TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOGMNR_CONTENTS TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOGMNR_PARAMETERS TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$LOGFILE TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$ARCHIVED_LOG TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$ARCHIVE_DEST_STATUS TO dbzuser CONTAINER=ALL;
+GRANT SELECT ON V_$TRANSACTION TO dbzuser CONTAINER=ALL;
+
+GRANT connect, resource to c##dbzuser;
+GRANT unlimited tablespace to c##dbzuser;
+GRANT create synonym, create public synonym to c##dbzuser;
+GRANT create view to c##dbzuser;
 
